@@ -3,7 +3,7 @@
 #import "Music.h"
 #import "Spotify.h"
 
-const NSTimeInterval kPollingInterval = 10.0;
+const NSTimeInterval kPollingInterval = 1.0;
 
 
 @interface AppDelegate ()
@@ -84,16 +84,32 @@ const NSTimeInterval kPollingInterval = 10.0;
 - (void)updateTrackInfo
 {
     id currentTrack = nil;
+    NSString *trackInfo = @"♫";
     
     if ([self.music isRunning] && [self.music playerState] == MusicEPlSPlaying) {
         currentTrack = [self.music currentTrack];
+        trackInfo = [NSString stringWithFormat:@"%@ - %@ (%@ / %@)",
+                     [currentTrack artist],
+                     [currentTrack name],
+                     [self formatTime:[self.music playerPosition]],
+                     [self formatTime:[currentTrack duration]]];
     } else if ([self.spotify isRunning] && [self.spotify playerState] == SpotifyEPlSPlaying) {
         currentTrack = [self.spotify currentTrack];
+        trackInfo = [NSString stringWithFormat:@"%@ - %@ (%@ / %@)",
+                     [currentTrack artist],
+                     [currentTrack name],
+                     [self formatTime:[self.spotify playerPosition]],
+                     [self formatTime:[currentTrack duration]]];
     }
 
-    statusItem.button.title = currentTrack
-        ? [NSString stringWithFormat:@"%@ - %@", [currentTrack artist], [currentTrack name]]
-        : @"♫";
+    self.statusItem.button.title = trackInfo;
+}
+
+- (NSString *)formatTime:(NSTimeInterval)timeInterval
+{
+    NSInteger minutes = (NSInteger)(timeInterval / 60.0);
+    NSInteger seconds = (NSInteger)fmod(timeInterval, 60.0);
+    return [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
 }
 
 - (void)timerDidFire:(NSTimer *)theTimer
