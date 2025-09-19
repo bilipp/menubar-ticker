@@ -3,7 +3,7 @@
 #import "Music.h"
 #import "Spotify.h"
 
-const NSTimeInterval kPollingInterval = 1.0;
+const NSTimeInterval kPollingInterval = 5.0;
 
 
 @interface AppDelegate ()
